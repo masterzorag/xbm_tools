@@ -6,7 +6,7 @@ X-BitMap tools
 
 - genXBMfonts.sh
 -----------------
-script to create xbm glyph from truetype fonts anc C header to include font in yur project
+script to create xbm glyph from truetype fonts, and C header to include font in your project
 
 - xbm_dump
 -----------

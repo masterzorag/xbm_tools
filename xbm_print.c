@@ -49,7 +49,7 @@
 */
 
 #include <stdio.h>
-#include "xbm_font.h" /* ! generate it with my genfonts script ! */
+#include "xbm_font.h" /* ! generate it with my genXBMfonts script ! */
 
 void xbm_print(const int x, const int y, const char *text, unsigned int *buffer)
 {
