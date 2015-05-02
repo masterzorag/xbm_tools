@@ -138,8 +138,8 @@ exit
 # 1. rebuild $fontDestDir/$fontName.h
 # ./genXBMfonts.sh
 
-# 2. use generated XBM fonts: hardcode in xbm_dump
+# 2. use generated XBM fonts: hardcode in xbm_print
 # cp razors.ttf/xbm/razors.ttf.h xbm_font.h
 
-# 2. rebuild xbm_tools
+# 3. rebuild xbm_tools
 # make clean && make
