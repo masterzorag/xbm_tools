@@ -73,7 +73,7 @@ do
 		   echo "$n: $d.$type [$D]"
 
 		   # extra: dump single XBM to console
-			./xbm_dump "$fontDestDir/$d.$type" &> /dev/null
+			./xbm_dump "$fontDestDir/$d.$type"
 			
 			# 3a. strip data bits and push to output
 			tail -n+4 "$fontDestDir/$d.$type" | head --bytes -5 >> $t
