@@ -53,9 +53,7 @@
 
 void xbm_print(const int x, const int y, const char *text, unsigned int *buffer)
 {
-	int i, j;
-//	int tempx = 0; // scans the font bitmap, j++ 0-7: +j
-	int tempy = 0;
+	int i, j, tx = 0;
 	char c;
 
 	while(*text != '\0'){
@@ -67,25 +65,26 @@ void xbm_print(const int x, const int y, const char *text, unsigned int *buffer)
 		// font indexing by current char
 		char *bit = xbmFont[c - LOWER_ASCII_CODE];
 		
-		// dump bits map: bytes_per_line 2, size 32 char of 8 bit
-		for(i = 0; i < 32; i++) {
+		// dump bits map:
+		for(i = 0; i < (FONT_W * FONT_H) / BITS_IN_BYTE; i++){
 			// scans 8 bits per char
-			for(j = 0; j < 8; j++){
+			for(j = 0; j < BITS_IN_BYTE; j++){
 			//	printf("%c", (data[i] & (1 << j)) ? ' ' : '0' );		// least significant bit first
 			//	printf("%d", (data[i] & (0x80 >> j)) ? 1 : 0); 			// right shifting the value will print bits in reverse.				
 				if(bit[i] & (1 << j)){		// least significant bit first
-					printf(" ");
-				} else { // paint pixel
-					printf("*");
+					printf("*");	// paint FG
+				} else { 
+					printf(" ");	// paint BG pixel
 				}
 			}
-			
-	  		if(i % (FONT_W /8) != 0) {
-	  			puts("");	//decrease gradient
-	  			tempy++;
+			tx++;
+			if(tx == (FONT_W / BITS_IN_BYTE)) {
+  				tx=0;
+  				puts("");
 			}
 		}
-		tempy = 0;	
+		
+		// glyph painted, move one char right on text
 		++text;
 	}
 }

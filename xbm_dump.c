@@ -265,7 +265,7 @@ int main(int argc, char **argv)
 	char *filename = argv[1];
 	FILE *f = fopen(filename, "r");
 	if(!f) 
-		return 0;
+		return -1;
 	
 	uint w, h;
 	int x_hot, y_hot;
@@ -273,25 +273,30 @@ int main(int argc, char **argv)
 	
 	if(!read_bitmap_file_data (f, &w, &h, &data, &x_hot, &y_hot)) {
 		printf("Invalid XBM file: %s\n", filename);
-		return 0;
+		return -1;
 	}
 	
 	// verbose
 	if(argv[2]) {
 		printf("%dx%d\t(%d %d), data @%p\n", w, h, x_hot, y_hot, &data);
-		printf("size %d\n", w*h / BITS_IN_BYTE);
+		printf("size %d\n", w * h / BITS_IN_BYTE);
 		printf("bytes_per_line %d\n", w / BITS_IN_BYTE);
 	}
 	
-	// dump bits map: bytes_per_line 2, size 32
-	int i, j;
-	for(i = 0; i < 32; i++) {
+	// dump bits map:
+	int i, j, tx = 0;
+	
+	for(i = 0; i < (w * h / BITS_IN_BYTE); i++) {
 		for(j = 0; j < BITS_IN_BYTE; j++){
-			printf("%c", (data[i] & (1 << j)) ? ' ' : '*' );		// least significant bit first
+			printf("%c", (data[i] & (1 << j)) ? '*' : ' ' );		// least significant bit first
 		//	printf("%d", (value & (0x80 >> j)) ? 1 : 0); 			// right shifting the value will print bits in reverse.
 		}
-  		if(i % (w / BITS_IN_BYTE) != 0) puts("");
+		tx++;
+  		if(tx == (w / BITS_IN_BYTE)) {
+  			tx=0;
+  			puts("");
+		}
 	}
 	
-	return 1;
+	return 0;
 }
