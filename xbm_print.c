@@ -49,7 +49,9 @@ xbm_tools # ./xbm_print mz
 */
 
 #include <stdio.h>
-#include "xbm_font.h" /* ! generate it with my genXBMfonts script ! */
+
+/* generate with genXBMfonts, https://github.com/masterzorag/xbm_tools */
+#include "xbm_font.h"
 
 void xbm_print(const int x, const int y, const char *text, unsigned int *buffer)
 {
