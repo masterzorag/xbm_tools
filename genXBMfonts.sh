@@ -6,14 +6,21 @@
 
 # This script uses ImageMagick convert to generate images of glyphs
 
-FontDir="Razor_1911"
-Font_W=16
-Font_H=16
+if [ -z $1 ]; then
+	echo "$0 FontDir Font_W Font_H"
+	echo "$0 Razor_1911 16 16"
+	exit
+fi 
 
-### definitions end here ###
+### arguments, keep 16x16 as default
 
-#fonts=""
-fonts="$fonts $(echo "$FontDir"/*.ttf)"
+FontDir=$1
+Font_W=$2
+Font_H=$3
+
+### process argv end here ###
+
+fonts="$fonts $(echo "$FontDir"*.ttf)"
 
 # ImageMagick supported extension: pnm, png, bmp, xpm, pbm... here we deal with xbm
 type=xbm
@@ -23,14 +30,11 @@ echo "Found" $(echo "$fonts" | wc -w) "fonts"
 # for each font
 for i in $fonts
 do
-    fontName=razors.ttf
-    echo "$fontName"
-    
-    fontDestDir="$fontName/$type"    
+    fontDestDir="$FontDir$type"    
     mkdir -p "$fontDestDir"
     
     t=$fontDestDir/temp
-    out=fontDestDir/$fontName.h
+    out=$fontDestDir/xbm_font.h
     echo "$t, $out"
     
 	if [ -f "$t" ]
@@ -45,7 +49,7 @@ do
 	# chars="  ! a b c d e f g h i j k l m n o p q r s t u v w x y z 0 1 2 3 4 5 6 7 8 9 + - / # . , \*"	
 	# for c in $chars
 	# Better: do a printable range set, start from char ' ' (space): ASCII 32
-	# ASCII 127 is NOT printable and will write $fontName.h file in binary form!
+	# ASCII 127 is NOT printable and will write output.h file in binary form!
 	# keep it under 127 for now...
     for c in `seq 32 126`
     do
@@ -100,7 +104,7 @@ do
     printf "I: range of %d ASCII codes\n" $n
     
 	# 1. build top C header
-	printf "/*\n\t%s bits\n" $fontName > $out
+	printf "/*\n\t%s bits\n" $fonts > $out
 	printf "\tgenerated with genXBMfonts, https://github.com/masterzorag/xbm_tools\n" >> $out
 	printf "\t2015, masterzorag@gmail.com\n*/\n\n" >> $out
 	
@@ -140,11 +144,11 @@ viewnior $fontDestDir &> /dev/null
 
 exit
 
-# 1. rebuild $fontDestDir/$fontName.h
-# ./genXBMfonts.sh
+# 1. rebuild $fontDestDir/xbm_font.h
+# ./genXBMfonts.sh Razor_1911/ 16 16
 
 # 2. use generated XBM fonts: hardcode in xbm_print
-# cp razors.ttf/xbm/razors.ttf.h xbm_font.h
+# cp Razor_1911/xbm/xbm_font.h xbm_font.h
 
 # 3. rebuild xbm_tools
 # make clean && make
