@@ -7,6 +7,10 @@
 # This script uses ImageMagick convert to generate images of glyphs
 
 FontDir="Razor_1911"
+Font_W=16
+Font_H=16
+
+### definitions end here ###
 
 #fonts=""
 fonts="$fonts $(echo "$FontDir"/*.ttf)"
@@ -26,12 +30,13 @@ do
     mkdir -p "$fontDestDir"
     
     t=$fontDestDir/temp
-    echo "$t"
+    out=fontDestDir/$fontName.h
+    echo "$t, $out"
     
 	if [ -f "$t" ]
 	then
 		rm $t 
-		rm $fontDestDir/$fontName.h
+		rm $out
 	fi
 	
 	# keep track of array index
@@ -53,12 +58,12 @@ do
 		# 1. build commented label header: array idx, ascii code, glyph
 		echo "{ /* $n: ASCII $d [$D] bits */" >> $t
     
-    	# Generate 16x16 images, 1bpp of each character in ASCII range 
-    	# call imagemagick tool to convert bitmap(s)
+    	# Generate (Font_W x Font_H) images, 1bpp of each character in ASCII range 
+    	# call imagemagick tool to convert bitmap
     	convert \
 		+antialias \
 		-depth 1 -colors 2 \
-            -size 16x16 \
+            -size "$Font_W"x"$Font_H" \
             -background white -fill black \
             -font "$i" \
             -pointsize 17 \
@@ -95,23 +100,23 @@ do
     printf "I: range of %d ASCII codes\n" $n
     
 	# 1. build top C header
-	printf "/*\n\t%s bits\n" $fontName > $fontDestDir/$fontName.h
-	printf "\tgenerated with genXBMfonts, https://github.com/masterzorag/xbm_tools\n" >> $fontDestDir/$fontName.h
-	printf "\t2015, masterzorag@gmail.com\n*/\n\n" >> $fontDestDir/$fontName.h
+	printf "/*\n\t%s bits\n" $fontName > $out
+	printf "\tgenerated with genXBMfonts, https://github.com/masterzorag/xbm_tools\n" >> $out
+	printf "\t2015, masterzorag@gmail.com\n*/\n\n" >> $out
 	
-	printf "#define LOWER_ASCII_CODE %d\n" 32 >> $fontDestDir/$fontName.h
-	printf "#define UPPER_ASCII_CODE %d\n" 126 >> $fontDestDir/$fontName.h
-	printf "#define FONT_W %d\n" 16 >> $fontDestDir/$fontName.h
-	printf "#define FONT_H %d\n" 16 >> $fontDestDir/$fontName.h
-	printf "#define BITS_IN_BYTE %d\n\n" 8 >> $fontDestDir/$fontName.h
+	printf "#define LOWER_ASCII_CODE %d\n" 32 >> $out
+	printf "#define UPPER_ASCII_CODE %d\n" 126 >> $out
+	printf "#define FONT_W %d\n" $Font_W >> $out
+	printf "#define FONT_H %d\n" $Font_H >> $out
+	printf "#define BITS_IN_BYTE %d\n\n" 8 >> $out
 	
-	echo "char xbmFont[$n][32] = {" >> $fontDestDir/$fontName.h
+	echo "char xbmFont[$n][(FONT_W * FONT_H) / BITS_IN_BYTE] = {" >> $out
     
     # 2. fix: remove last ','
-	head --bytes -2 $t >> $fontDestDir/$fontName.h 
+	head --bytes -2 $t >> $out 
     
     # 3. build bottom C header: add "};"
-	printf "\n};\n" >> $fontDestDir/$fontName.h
+	printf "\n};\n" >> $out
 
 	# extra: cleanup from temp
 	rm $t
@@ -124,11 +129,11 @@ n=$(ls $fontDestDir/*.$type | wc -l)
 printf "I: succesfully parsed %d ASCII codes\nDone\n\n" $n
 
 # inquiry, preview outputted C header
-file $fontDestDir/$fontName.h
+file $out
 
-head -10 $fontDestDir/$fontName.h
+head -14 $out
 echo "..."
-tail -6 $fontDestDir/$fontName.h
+tail -6 $out
 
 # extra: look at exported XBM(s)
 viewnior $fontDestDir &> /dev/null
