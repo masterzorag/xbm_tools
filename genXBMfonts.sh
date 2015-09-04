@@ -115,7 +115,10 @@ do
     printf "I: range of %d ASCII codes\n" $n
 
     # 1. build top C header
-    printf "/*\n\t%s bits\n" $fonts > $out
+    printf "#ifndef __XBM_FONT_H__\n" > $out
+    printf "#define __XBM_FONT_H__\n" >> $out
+
+    printf "\n/*\n\t%s bits\n" $fonts >> $out
     printf "\tgenerated with genXBMfonts, https://github.com/masterzorag/xbm_tools\n" >> $out
     printf "\t2015, masterzorag@gmail.com\n*/\n\n" >> $out
 
@@ -132,6 +135,8 @@ do
 
     # 3. build bottom C header: add "};"
     printf "\n};\n" >> $out
+
+    printf "#endif //__XBM_FONT_H__\n" >> $out
 
     # extra: cleanup from temp
     rm $t
