@@ -30,7 +30,7 @@ Font_H=$3
 
 ### process argv end here ###
 
-fonts="$fonts $(echo "$FontDir"*.ttf)"
+fonts="$fonts $(echo "$FontDir"/*.ttf)"
 
 # ImageMagick supported extension: pnm, png, bmp, xpm, pbm... here we deal with xbm
 type=xbm
@@ -40,7 +40,8 @@ echo "Found" $(echo "$fonts" | wc -w) "fonts"
 # for each font
 for i in $fonts
 do
-    fontDestDir="$FontDir$type"
+    echo "$i"
+    fontDestDir="$FontDir/$type"
     mkdir -p "$fontDestDir"
 
     t=$fontDestDir/temp
