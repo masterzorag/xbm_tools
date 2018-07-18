@@ -96,7 +96,7 @@ do
             ./xbm_dump "$fontDestDir/$d.$type"
 
             # 3a. strip data bits and push to output
-            sed 's/^/   /;1,3 d;7 d;s/};//g' "$fontDestDir/$d.$type" >> $t
+            sed 's/^/   /;1,3 d;7 d;s/, };//g' "$fontDestDir/$d.$type" >> $t
 
         else
             echo "$n: $d.$type does not exists!"
