@@ -128,7 +128,7 @@ do
     printf "#define FONT_H %d\n" $Font_H >> $out
     printf "#define BITS_IN_BYTE %d\n\n" 8 >> $out
 
-    echo "char xbmFont[$n][(FONT_W * FONT_H) / BITS_IN_BYTE] = {" >> $out
+    echo "static char xbmFont[$n][(FONT_W * FONT_H) / BITS_IN_BYTE] = {" >> $out
 
     # 2. fix: remove last ','
     sed '${/^$/d;};$ s/.$//' $t >> $out 
