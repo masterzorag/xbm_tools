@@ -71,7 +71,7 @@ do
         D="$(printf "\x$(printf %x $c)")"
 
         # 1. build commented label header: array idx, ascii code, glyph
-        echo "{ /* $n: ASCII $d [$D] bits */" >> $t
+        echo "  { /* $n: ASCII $d [$D] bits */" >> $t
 
         # Generate (Font_W x Font_H) images, 1bpp of each character in ASCII range 
         # call imagemagick tool to convert bitmap
@@ -96,17 +96,17 @@ do
             ./xbm_dump "$fontDestDir/$d.$type"
 
             # 3a. strip data bits and push to output
-            tail -n+4 "$fontDestDir/$d.$type" | head --bytes -5 >> $t
+            sed 's/^/   /;1,3 d;7 d;s/, };//g' "$fontDestDir/$d.$type" >> $t
 
         else
             echo "$n: $d.$type does not exists!"
             # 3b. build zeroed data bit header for a missing ASCII code
-            printf "\t0x00" >> $t
+            printf "\t\t 0x00\n" >> $t
 
         fi
 
         # 4. close data bits footer
-        printf "\n},\n" >> $t
+        printf "\t},\n" >> $t
 
         # increase array count
         ((n+=1))
@@ -128,13 +128,13 @@ do
     printf "#define FONT_H %d\n" $Font_H >> $out
     printf "#define BITS_IN_BYTE %d\n\n" 8 >> $out
 
-    echo "char xbmFont[$n][(FONT_W * FONT_H) / BITS_IN_BYTE] = {" >> $out
+    echo "static char xbmFont[$n][(FONT_W * FONT_H) / BITS_IN_BYTE] = {" >> $out
 
     # 2. fix: remove last ','
-    head --bytes -2 $t >> $out 
+    sed '${/^$/d;};$ s/.$//' $t >> $out 
 
     # 3. build bottom C header: add "};"
-    printf "\n};\n" >> $out
+    printf "};\n" >> $out
 
     printf "#endif //__XBM_FONT_H__\n" >> $out
 
